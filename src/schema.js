@@ -3,20 +3,20 @@
 export function ensureContentTypes (space) {
   return space.getContentTypes().then((contentTypes) => {
     return Promise.all([
-      ensureUser(space, contentTypes),
+      ensureAuthor(space, contentTypes),
       ensureTag(space, contentTypes),
       ensurePost(space, contentTypes)
     ]);
   }).then((contentTypes) => {
     return {
-      user: contentTypes[0],
+      author: contentTypes[0],
       tag: contentTypes[1],
       post: contentTypes[2]
     };
   });
 }
 
-function ensureUser (space, contentTypes) {
+function ensureAuthor (space, contentTypes) {
   let fields = [
     { id: 'name', name: 'Name', type: 'Symbol' },
     { id: 'slug', name: 'Slug', type: 'Symbol' },
@@ -24,13 +24,14 @@ function ensureUser (space, contentTypes) {
     { id: 'image', name: 'Image', type: 'Symbol' }
   ];
 
-  return ensureEntity(space, contentTypes, 'User', fields);
+  return ensureEntity(space, contentTypes, 'Author', fields);
 }
 
 function ensureTag (space, contentTypes) {
   let fields = [
     { id: 'name', name: 'Name', type: 'Symbol' },
-    { id: 'slug', name: 'Slug', type: 'Symbol' }
+    { id: 'slug', name: 'Slug', type: 'Symbol' },
+    { id: 'description', name: 'Description', type: 'Symbol' }
   ];
 
   return ensureEntity(space, contentTypes, 'Tag', fields);
@@ -40,11 +41,12 @@ function ensurePost (space, contentTypes) {
   let fields = [
     { id: 'title', name: 'Title', type: 'Symbol' },
     { id: 'slug', name: 'Slug', type: 'Symbol' },
-    { id: 'body', name: 'Body', type: 'Text' },
-    { id: 'publishedAt', name: 'Published At', type: 'Date' },
     { id: 'metaTitle', name: 'Meta Title', type: 'Symbol' },
     { id: 'metaDescription', name: 'Meta Description', type: 'Symbol' },
-    { id: 'author', name: 'Author', type: 'Link', linkType: 'Entry' }
+    { id: 'author', name: 'Author', type: 'Link', linkType: 'Entry' },
+    { id: 'legacyImage', name: 'Legacy Image', type: 'Symbol'},
+    { id: 'body', name: 'Body', type: 'Text' },
+    { id: 'publishedAt', name: 'Published Date', type: 'Date'}
   ];
 
   return ensureEntity(space, contentTypes, 'Post', fields);

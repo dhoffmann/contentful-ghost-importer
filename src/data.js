@@ -3,22 +3,22 @@
 export function importData (space, data, contentTypes) {
   return space.getEntries().then((entries) => {
     return Promise.all([
-      importUsers(entries, space, data, contentTypes.user),
+      importAuthors(entries, space, data, contentTypes.author),
       importTags(entries, space, data, contentTypes.tag),
       importPosts(entries, space, data, contentTypes.post)
     ]);
   });
 }
 
-function importUsers (entries, space, data, userContentType) {
-  return importEntities(...arguments, 'user', (user) => {
+function importAuthors (entries, space, data, authorContentType) {
+  return importEntities(...arguments, 'author', (author) => {
     return {
-      sys: { id: user.slug },
+      sys: { id: author.slug },
       fields: {
-        name: { 'en-US': user.name },
-        slug: { 'en-US': user.slug },
-        email: { 'en-US': user.email },
-        image: { 'en-US': user.image }
+        name: { 'en-US': author.name },
+        slug: { 'en-US': author.slug },
+        email: { 'en-US': author.email },
+        image: { 'en-US': author.image }
       }
     };
   });
@@ -30,7 +30,8 @@ function importTags (entries, space, data, contentTypes) {
       sys: { id: tag.slug },
       fields: {
         name: { 'en-US': tag.name },
-        slug: { 'en-US': tag.slug }
+        slug: { 'en-US': tag.slug },
+        description: { 'en-US': tag.description }
       }
     };
   });
@@ -39,20 +40,20 @@ function importTags (entries, space, data, contentTypes) {
 function importPosts (entries, space, data, contentTypes) {
   return importEntities(...arguments, 'post', (post) => {
     return {
-      sys: { id: post.slug },
       fields: {
         title: { 'en-US': post.title },
         slug: { 'en-US': post.slug },
         body: { 'en-US': post.markdown },
-        publishedAt: { 'en-US': post.published_at },
+        legacyImage: { 'en-US': post.image },
         metaTitle: { 'en-US': post.meta_title },
         metaDescription: { 'en-US': post.meta_description },
+        publishedAt: { 'en-US': post.published_at },
         author: {
           'en-US': {
             sys: {
               type: 'Link',
               linkType: 'Entry',
-              id: findUserById(data.users, post.author_id).slug
+              id: findAuthorById(data.authors, post.author_id).slug
             }
           }
         }
@@ -61,8 +62,8 @@ function importPosts (entries, space, data, contentTypes) {
   });
 }
 
-function findUserById (users, id) {
-  return users.find((user) => (user.id === id));
+function findAuthorById (authors, id) {
+  return authors.find((author) => (author.id === id));
 }
 
 function importEntities (entries, space, entities, entityContentType, entityName, dataMapper) {
